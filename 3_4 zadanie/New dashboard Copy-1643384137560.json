@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 5,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -60,7 +60,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(by_path_counter_total{instance=\"app:5000\",job=\"prometheus\",path=\"/\"}[1m])",
+          "expr": "increase(by_path_counter_total{instance=\"app:5000\",job=\"prometheus\",path=\"/\"}[15s] offset 1s) ",
+          "instant": false,
           "interval": "",
           "legendFormat": "",
           "refId": "A"
