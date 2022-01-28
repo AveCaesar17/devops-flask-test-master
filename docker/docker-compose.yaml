@@ -1,0 +1,88 @@
+version: '3'
+
+services:
+  app:
+    container_name: app_py
+    build:
+       context: ../
+       dockerfile: ./docker/dockerfiles/aps.dockerfile
+    expose:
+      - 5000
+    networks:
+      - custom_network_1
+    ports:
+      - 5000:5000
+  
+  pro:
+    image: prom/prometheus:v2.17.1
+    container_name: prometheus
+    volumes:
+      - prometheus_volume:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    expose:
+      - 9090
+    networks:
+      - custom_network_1
+    labels:
+      org.label-schema.group: "monitoring"
+    ports:
+      - 9090:9090
+
+
+
+  blackbox_exporter:
+    build: ./blackboxexporter
+    expose:
+      - 9115
+    networks:
+      - custom_network_1
+    ports:
+      - 9115:9115
+    command:
+      - '--config.file=/etc/blackboxexporter/config.yml'
+    restart: always
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "5m"
+  
+  
+  grafana:
+    image: grafana/grafana:6.7.2
+    container_name: grafana
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    expose:
+      - 3000
+    networks:
+      - custom_network_1
+    labels:
+      org.label-schema.group: "monitoring"
+    ports:
+      - 3000:3000
+networks:
+   custom_network_1:
+     
+      
+
+
+volumes:
+  prometheus_volume:
+  prometheus_data:
+
+  grafana_data:
+  grafana_volues:
