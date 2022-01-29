@@ -65,7 +65,7 @@
       "steppedLine": true,
       "targets": [
         {
-          "expr": "increase(by_path_counter_total{instance=\"app:5000\",job=\"prometheus\",path=\"/\"}[2s] offset 1s) ",
+          "expr": "irate(by_path_counter_total{instance=\"app:5000\",job=\"prometheus\",path=\"/\"}[2s] offset 1s) ",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -151,5 +151,5 @@
   "variables": {
     "list": []
   },
-  "version": 3
+  "version": 4
 }
